@@ -10,6 +10,10 @@
     "test": "plasmo test"
   },
   "dependencies": {
+    "@emotion/react": "11.11.1",
+    "@mantine/core": "6.0.21",
+    "@mantine/hooks": "6.0.21",
+    "@tabler/icons-react": "^2.39.0",
     "plasmo": "0.83.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
