@@ -38,7 +38,13 @@ const StorageList = ({ title, storages, onClick }) => {
     );
 };
 
-const SelectStorage = ({ bot, setBot, storage, setStorage, storageTypes = [] }) => {
+const SelectStorage = ({
+    bot,
+    setBot,
+    storage,
+    setStorage,
+    storageTypes = ['variables', 'arrays', 'tables'],
+}) => {
 
     const [bots, setBots] = useLocalStorage({
         key: 'bots',
