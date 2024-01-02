@@ -1,10 +1,13 @@
 {
   "extends": "plasmo/templates/tsconfig.base",
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "build"
   ],
   "include": [
     ".plasmo/index.d.ts",
+    "./**/*.js",
+    "./**/*.jsx",
     "./**/*.ts",
     "./**/*.tsx"
   ],
