@@ -1,26 +1,32 @@
 import {
     Button,
+    Flex,
+    Select,
     TextInput,
 } from '@mantine/core';
 import { getActiveTab, focusCurrentWindow } from '~utils/helper';
-import { ContentUIs, MsgReasons } from '~enums';
+import { ContentUIs, MsgReasons, SelectorTypes } from '~enums';
 
 const EnterText = ({ step, setStep }) => {
 
-    const handleChange = (e) => {
-        let { name, value } = e.target;
+    const updateSettings = (name, value) => {
         const updatedStep = { ...step };
-        // if (name === 'openInNewTab') {
-        //     value = e.currentTarget.checked;
-        // }
+        if (name === 'selectorType' && updatedStep.settings.selectorType !== value) {
+            updatedStep.settings.selector = '';
+        }
         updatedStep.settings[name] = value;
         setStep(updatedStep);
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        updateSettings(name, value);
     };
 
     const startElementSelectorMode = async () => {
 
         const tab = await getActiveTab(true);
-        const { success, XPath } = await chrome.tabs.sendMessage(tab.id, {
+        const { success, XPath, cssSelector } = await chrome.tabs.sendMessage(tab.id, {
             reason: MsgReasons.ShowUI,
             component: ContentUIs.ElementSelector,
             elementType: 'input',
@@ -28,7 +34,7 @@ const EnterText = ({ step, setStep }) => {
 
         if (success) {
             const updatedStep = { ...step };
-            updatedStep.settings.XPath = XPath;
+            updatedStep.settings.selector = step.settings.selectorType === SelectorTypes.XPath ? XPath : cssSelector;
             setStep(updatedStep);
         }
 
@@ -38,17 +44,28 @@ const EnterText = ({ step, setStep }) => {
     return (
 
         <>
-            <TextInput
-                label="Enter XPath of input element"
-                mt="xl"
-                mb="xs"
-                name="XPath"
-                value={step.settings.XPath}
-                onChange={handleChange}
-                labelProps={{
-                    style: { marginBottom: '0.25rem' }
-                }}
-            />
+            <Flex gap="sm" mt="xl" mb="xs">
+                <Select
+                    label="Selector Type"
+                    value={step.settings.selectorType}
+                    onChange={(value) => updateSettings('selectorType', value)}
+                    data={Object.entries(SelectorTypes).map(([label, value]) => (
+                        { label, value }
+                    ))}
+                    allowDeselect={false}
+                />
+
+                <TextInput
+                    label="Enter a selector for the element"
+                    name="selector"
+                    value={step.settings.selector}
+                    onChange={handleChange}
+                    style={{ flexGrow: 1 }}
+                    labelProps={{
+                        style: { marginBottom: '0.25rem' }
+                    }}
+                />
+            </Flex>
 
             <Button
                 variant="light"
