@@ -13,9 +13,10 @@ import {
 import {
     IconPlayerPlay,
     IconPlus,
-    IconTrash,
 } from '@tabler/icons-react';
+import DeleteButton from './Common/DeleteButton';
 import ShortcutKey from './Common/ShortcutKey';
+import { openBotWindow } from '~utils/helper';
 
 const Home = ({ setIsRunningBot }) => {
 
@@ -35,25 +36,11 @@ const Home = ({ setIsRunningBot }) => {
 
     const goToBotForm = async (botId, runBot = false) => {
 
-        const route = `/bots/${botId ?? 'create'}`;
-
-        const { type: windowType } = await chrome.windows.getCurrent();
-        if (windowType === 'popup') {
+        const { success, route } = await openBotWindow(botId, runBot);
+        if (!success) {
             navigation(route);
             setIsRunningBot(runBot);
-            return;
         }
-
-        await chrome.windows.create({
-            // focused: false,
-            // width: 400,
-            // height: 600,
-            type: 'popup',
-            url: `popup.html?route=${route}${runBot ? '&runBot' : ''}`,
-            top: 0,
-            left: 0,
-        });
-        window.close();
     };
 
     return (
@@ -114,13 +101,10 @@ const Home = ({ setIsRunningBot }) => {
                                 <IconPlayerPlay size="1.125rem" />
                             </ActionIcon>
 
-                            <ActionIcon
-                                color="red"
-                                variant="subtle"
-                                onClick={() => deleteBot(bot)}
-                            >
-                                <IconTrash size="1.125rem" />
-                            </ActionIcon>
+                            <DeleteButton
+                                content={`Are you sure you want to delete this bot (${bot.name})?`}
+                                onConfirm={() => deleteBot(bot)}
+                            />
                         </Flex>
                     </Flex>
 

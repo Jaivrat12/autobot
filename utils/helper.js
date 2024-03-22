@@ -78,6 +78,38 @@ export async function getActiveTab(focused) {
     }
 }
 
+export async function openBotWindow(botId, runBot = false) {
+
+    const route = `/bots/${botId ?? 'create'}`;
+    let success = false;
+
+    const currWindow = await chrome.windows.getCurrent();
+    // const tabs = await chrome.tabs.query({
+    //     url: chrome.runtime.getURL('popup.html')
+    // });
+    // tabs.map(({ windowId }) => {
+    //     if (windowId !== currWindow.id) {
+    //         chrome.windows.remove(windowId);
+    //     }
+    // });
+
+    if (currWindow.type !== 'popup') {
+
+        await chrome.windows.create({
+            state: runBot ? 'minimized' : 'maximized',
+            type: 'popup',
+            url: `popup.html?route=${route}${runBot ? '&runBot' : ''}`,
+        });
+
+        // if (window) {
+        //     window.close();
+        // }
+        success = true;
+    }
+
+    return { success, route };
+}
+
 export async function focusCurrentWindow() {
     const { id } = await chrome.windows.getCurrent();
     await chrome.windows.update(id, { focused: true });

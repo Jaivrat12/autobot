@@ -1,4 +1,5 @@
 import { MsgReasons } from '~enums';
+import { openBotWindow } from '~utils/helper';
 
 chrome.windows.onFocusChanged.addListener(async (windowId) => {
 
@@ -12,14 +13,6 @@ chrome.windows.onFocusChanged.addListener(async (windowId) => {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.reason === MsgReasons.OpenPopupAndRunBot) {
-        chrome.windows.create({
-            // focused: false,
-            // width: 400,
-            // height: 600,
-            type: 'popup',
-            url: `popup.html?route=/bots/${message.botId}&runBot`,
-            top: 0,
-            left: 0,
-        });
+        openBotWindow(message.botId, true);
     }
 });

@@ -305,7 +305,6 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
 
             if (res.success && currStep < bot.steps.length - 1) {
 
-                await wait(1000);
                 setRunState((state) => ({
                     ...state,
                     isRunning: true,
