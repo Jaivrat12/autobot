@@ -1,4 +1,4 @@
-import { useEffect, useState, type MouseEventHandler } from 'react';
+import { useState, type MouseEventHandler } from 'react';
 import { MantineProvider } from '@mantine/core';
 import ElementHighlighter from './ElementHighlighter';
 import ElementSelectorModal from './ElementSelectorModal';
@@ -35,7 +35,7 @@ const ElementSelector = ({ multiple, sendResponse }: ElementSelectorProps) => {
         return elements.slice(index + 1);
     };
 
-    const highlightElement = (e: MouseEvent) => {
+    const highlightElement: MouseEventHandler<HTMLDivElement> = (e) => {
 
         const getListElement = (element: Element | null): Element | null => {
 
@@ -48,7 +48,7 @@ const ElementSelector = ({ multiple, sendResponse }: ElementSelectorProps) => {
             }
 
             return getListElement(element.parentElement);
-        }
+        };
 
         let elements = removeOverlayElements(
             document.elementsFromPoint(e.clientX, e.clientY)
@@ -90,11 +90,6 @@ const ElementSelector = ({ multiple, sendResponse }: ElementSelectorProps) => {
 
         if (!selectedElement) return;
 
-        const options: AddEventListenerOptions & EventListenerOptions = {
-            passive: true
-        };
-        document.removeEventListener('mousemove', highlightElement, options);
-
         const elements = multiple ?
             selectedChildren.length
                 ? selectedChildren
@@ -112,18 +107,6 @@ const ElementSelector = ({ multiple, sendResponse }: ElementSelectorProps) => {
         });
     };
 
-    useEffect(() => {
-
-        const options: AddEventListenerOptions & EventListenerOptions = {
-            passive: true
-        };
-        document.addEventListener('mousemove', highlightElement, options);
-
-        return () => {
-            document.removeEventListener('mousemove', highlightElement, options);
-        }
-    }, [elements, selectedElement]);
-
     return (
 
         <MantineProvider>
@@ -131,6 +114,7 @@ const ElementSelector = ({ multiple, sendResponse }: ElementSelectorProps) => {
                 <div
                     id="autobot-element-selector-overlay"
                     onClick={selectElement}
+                    onMouseMove={highlightElement}
                     style={{
                         zIndex: 9999999,
                         position: 'fixed',
