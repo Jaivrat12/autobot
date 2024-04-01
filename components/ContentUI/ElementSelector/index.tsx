@@ -1,37 +1,43 @@
-import { useEffect, useState } from 'react';
-import { Button, MantineProvider } from '@mantine/core';
+import { useEffect, useState, type MouseEventHandler } from 'react';
+import { MantineProvider } from '@mantine/core';
 import ElementHighlighter from './ElementHighlighter';
+import ElementSelectorModal from './ElementSelectorModal';
 import getCssSelector from 'css-selector-generator';
 import getXPath from 'get-xpath';
-import { getKeysCombo } from '~utils/helper';
+
+type ElementSelectorProps = {
+    multiple: boolean;
+    sendResponse: any;
+};
 
 // TODO: https://www.npmjs.com/package/css-selector-generator
 // ? https://github.com/AutomaApp/automa/blob/main/src/content/elementSelector/listSelector.js
 // ? https://github.com/AutomaApp/automa/blob/main/src/lib/findSelector.js
-const ElementSelector = ({ multiple, sendResponse }) => {
+const ElementSelector = ({ multiple, sendResponse }: ElementSelectorProps) => {
 
     const [showOverlay, setShowOverlay] = useState(true);
+    const toggleShowOverlay = () => setShowOverlay(val => !val);
 
-    const [elements, setElements] = useState([]);
-    const [selectedElement, setSelectedElement] = useState(null);
+    const [elements, setElements] = useState<Element[]>([]);
+    const [selectedElement, setSelectedElement] = useState<Element | null>(null);
     const hoveredElement = elements[0];
 
     const hoveredSiblings = [...hoveredElement?.parentElement?.children ?? []];
     const selectedSiblings = [...selectedElement?.parentElement?.children ?? []];
 
-    const [hoveredChildren, setHoveredChildren] = useState([]);
-    const [selectedChildren, setSelectedChildren] = useState([]);
+    const [hoveredChildren, setHoveredChildren] = useState<(Element | null)[]>([]);
+    const [selectedChildren, setSelectedChildren] = useState<(Element | null)[]>([]);
 
     const hoveringChild = hoveredChildren.includes(hoveredElement);
 
-    const removeOverlayElements = (elements) => {
+    const removeOverlayElements = (elements: Element[]) => {
         const index = elements.findIndex(({ localName }) => localName === 'autobot-ext');
         return elements.slice(index + 1);
     };
 
-    const highlightElement = (e) => {
+    const highlightElement = (e: MouseEvent) => {
 
-        const getListElement = (element) => {
+        const getListElement = (element: Element | null): Element | null => {
 
             if (!element) {
                 return null;
@@ -70,7 +76,7 @@ const ElementSelector = ({ multiple, sendResponse }) => {
         }
     };
 
-    const selectElement = (e) => {
+    const selectElement: MouseEventHandler<HTMLDivElement> = (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (hoveredChildren.length) {
@@ -84,9 +90,10 @@ const ElementSelector = ({ multiple, sendResponse }) => {
 
         if (!selectedElement) return;
 
-        document.removeEventListener('mousemove', highlightElement, {
+        const options: AddEventListenerOptions & EventListenerOptions = {
             passive: true
-        });
+        };
+        document.removeEventListener('mousemove', highlightElement, options);
 
         const elements = multiple ?
             selectedChildren.length
@@ -107,53 +114,20 @@ const ElementSelector = ({ multiple, sendResponse }) => {
 
     useEffect(() => {
 
-        document.addEventListener('mousemove', highlightElement, {
+        const options: AddEventListenerOptions & EventListenerOptions = {
             passive: true
-        });
+        };
+        document.addEventListener('mousemove', highlightElement, options);
 
         return () => {
-            document.removeEventListener('mousemove', highlightElement, {
-                passive: true
-            });
+            document.removeEventListener('mousemove', highlightElement, options);
         }
-    }, [elements, selectedElement]);
-
-    useEffect(() => {
-        const listenToKeyCombos = (e) => {
-            e.preventDefault();
-            const keyCombo = getKeysCombo(e);
-            if (keyCombo === 'Ctrl+H') {
-                setShowOverlay(val => !val);
-            } else if (keyCombo === 'Ctrl+ENTER') {
-                confirmElement();
-            }
-        };
-        document.addEventListener('keydown', listenToKeyCombos);
-        return () => document.removeEventListener('keydown', listenToKeyCombos);
     }, [elements, selectedElement]);
 
     return (
 
         <MantineProvider>
-            {/* <div
-                style={{
-                    zIndex: 99999999,
-                    position: 'fixed',
-                    top: '1rem',
-                    right: '1rem',
-                    // background: '#fff',
-                }}
-            >
-                <Button
-                    onClick={confirmElement}
-                    disabled={!selectedElement}
-                >
-                    Confirm
-                </Button>
-            </div> */}
-
             {showOverlay && (
-
                 <div
                     id="autobot-element-selector-overlay"
                     onClick={selectElement}
@@ -173,7 +147,6 @@ const ElementSelector = ({ multiple, sendResponse }) => {
                         height="100%"
                     >
                         {multiple && !hoveringChild && hoveredElement && hoveredSiblings.map((sibling, i) => (
-
                             <ElementHighlighter
                                 key={i}
                                 element={sibling}
@@ -182,9 +155,7 @@ const ElementSelector = ({ multiple, sendResponse }) => {
                                 borderColor="#a1f"
                             />
                         ))}
-
                         {!multiple && hoveredElement && (
-
                             <ElementHighlighter
                                 element={hoveredElement}
                                 color="#fff"
@@ -192,9 +163,7 @@ const ElementSelector = ({ multiple, sendResponse }) => {
                                 borderColor="#a1f"
                             />
                         )}
-
                         {multiple && selectedElement && selectedSiblings.map((sibling, i) => (
-
                             <ElementHighlighter
                                 key={i}
                                 element={sibling}
@@ -203,9 +172,7 @@ const ElementSelector = ({ multiple, sendResponse }) => {
                                 borderColor="#ff1172"
                             />
                         ))}
-
                         {!multiple && selectedElement && (
-
                             <ElementHighlighter
                                 element={selectedElement}
                                 color="#fff"
@@ -213,9 +180,7 @@ const ElementSelector = ({ multiple, sendResponse }) => {
                                 borderColor="#ff1172"
                             />
                         )}
-
                         {multiple && hoveredChildren.map((child, i) => child && (
-
                             <ElementHighlighter
                                 key={i}
                                 element={child}
@@ -224,9 +189,7 @@ const ElementSelector = ({ multiple, sendResponse }) => {
                                 borderColor="#1172ff"
                             />
                         ))}
-
                         {multiple && selectedChildren.map((child, i) => child && (
-
                             <ElementHighlighter
                                 key={i}
                                 element={child}
@@ -238,6 +201,14 @@ const ElementSelector = ({ multiple, sendResponse }) => {
                     </svg>
                 </div>
             )}
+
+            <ElementSelectorModal
+                selectedElement={selectedElement}
+                confirm={confirmElement}
+                cancel={() => sendResponse({ success: false })}
+                showOverlay={showOverlay}
+                toggleShowOverlay={toggleShowOverlay}
+            />
         </MantineProvider>
     );
 }

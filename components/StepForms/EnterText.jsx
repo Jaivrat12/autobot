@@ -1,7 +1,10 @@
 import {
     Button,
+    Divider,
     Flex,
+    NumberInput,
     Select,
+    Switch,
     TextInput,
 } from '@mantine/core';
 import { getActiveTab, focusCurrentWindow } from '~utils/helper';
@@ -9,18 +12,27 @@ import { ContentUIs, MsgReasons, SelectorTypes } from '~enums';
 
 const EnterText = ({ step, setStep }) => {
 
-    const updateSettings = (name, value) => {
+    const {
+        selector,
+        selectorType,
+        retryCount,
+        retryDelay,
+        retryInfinitely,
+    } = step.settings;
+
+    const updateSettings = (key, value) => {
         const updatedStep = { ...step };
-        if (name === 'selectorType' && updatedStep.settings.selectorType !== value) {
+        if (key === 'selectorType' && updatedStep.settings.selectorType !== value) {
             updatedStep.settings.selector = '';
         }
-        updatedStep.settings[name] = value;
+        updatedStep.settings[key] = value;
         setStep(updatedStep);
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        updateSettings(name, value);
+        const { name, value, checked, type } = e.target;
+        const val = type === 'checkbox' ? checked : value;
+        updateSettings(name, val);
     };
 
     const startElementSelectorMode = async () => {
@@ -34,7 +46,7 @@ const EnterText = ({ step, setStep }) => {
 
         if (success) {
             const updatedStep = { ...step };
-            updatedStep.settings.selector = step.settings.selectorType === SelectorTypes.XPath ? XPath : cssSelector;
+            updatedStep.settings.selector = selectorType === SelectorTypes.XPath ? XPath : cssSelector;
             setStep(updatedStep);
         }
 
@@ -44,10 +56,21 @@ const EnterText = ({ step, setStep }) => {
     return (
 
         <>
-            <Flex gap="sm" mt="xl" mb="xs">
+            <TextInput
+                label="Input the text to enter"
+                mt="xl"
+                name="text"
+                value={step.settings.text}
+                onChange={handleChange}
+                labelProps={{
+                    style: { marginBottom: '0.25rem' }
+                }}
+            />
+
+            <Flex gap="sm" mt="md" mb="xs">
                 <Select
                     label="Selector Type"
-                    value={step.settings.selectorType}
+                    value={selectorType}
                     onChange={(value) => updateSettings('selectorType', value)}
                     data={Object.entries(SelectorTypes).map(([label, value]) => (
                         { label, value }
@@ -58,7 +81,7 @@ const EnterText = ({ step, setStep }) => {
                 <TextInput
                     label="Enter a selector for the element"
                     name="selector"
-                    value={step.settings.selector}
+                    value={selector}
                     onChange={handleChange}
                     style={{ flexGrow: 1 }}
                     labelProps={{
@@ -74,24 +97,39 @@ const EnterText = ({ step, setStep }) => {
                 Select Element
             </Button>
 
-            <TextInput
-                label="Input the text to enter"
-                my="xl"
-                name="text"
-                value={step.settings.text}
+            <Divider my="lg" />
+
+            <Switch
+                label="Retry Infinitely"
+                name="retryInfinitely"
+                checked={retryInfinitely}
                 onChange={handleChange}
-                labelProps={{
-                    style: { marginBottom: '0.25rem' }
-                }}
+                mb="sm"
             />
 
-            {/* <Switch
-                label="Open in new tab"
-                my="xl"
-                name="openInNewTab"
-                checked={step.settings.openInNewTab}
-                onChange={handleChange}
-            /> */}
+            <Flex gap="sm" mb="md">
+                <NumberInput
+                    label="Retry Count"
+                    description="Number of retry attempts if failed to find the element"
+                    value={retryCount}
+                    onChange={(value) => updateSettings('retryCount', value)}
+                    min={0}
+                    allowDecimal={false}
+                    w="100%"
+                    disabled={retryInfinitely}
+                />
+
+                <NumberInput
+                    label="Retry Delay (in milliseconds)"
+                    description="Delay between each retry attempt (should be >100)"
+                    value={retryDelay}
+                    onChange={(value) => updateSettings('retryDelay', value)}
+                    suffix=" ms"
+                    min={100}
+                    allowDecimal={false}
+                    w="100%"
+                />
+            </Flex>
         </>
     );
 }

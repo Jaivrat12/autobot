@@ -1,9 +1,28 @@
-import { ContentUIs, MsgReasons, SelectorTypes } from '~enums';
+import { ContentUIs, MsgReasons } from '~enums';
 import {
+    enterText,
     extractData,
-    getElementByXpath,
+    getElementBySelector,
     wait,
 } from '~utils/helper';
+
+const getElement = async ({
+    selector,
+    selectorType,
+    retryCount,
+    retryDelay,
+    retryInfinitely,
+}, callback) => {
+
+    const retries = retryInfinitely ? Infinity : retryCount;
+    const element = await getElementBySelector(selector, selectorType, retries, retryDelay);
+    if (element) {
+        return { success: callback(element) };
+    }
+
+    console.log(`Couldn't find element (${selector})`);
+    return { success: false };
+};
 
 const stepRunMethods = {
     goToPage: async ({ step, tabId, updateCurrentTab }) => {
@@ -16,31 +35,23 @@ const stepRunMethods = {
         return { success: true };
     },
     clickElement: ({ step }) => {
-        const { selector, selectorType } = step.settings;
-        const element = selectorType === SelectorTypes.XPath
-            ? getElementByXpath(selector)
-            : document.querySelector(selector);
-        console.log(element);
-        element?.click();
-        return { success: true };
+        return getElement(step.settings, (el) => {
+            el.click();
+            return true;
+        });
     },
     enterText: ({ step }) => {
-        const { selector, selectorType } = step.settings;
-        const input = selectorType === SelectorTypes.XPath
-            ? getElementByXpath(selector)
-            : document.querySelector(selector);
-        console.log(input);
-        input.value = step.settings.text;
-        return { success: true };
+        // https://stackoverflow.com/questions/40894637/how-to-programmatically-fill-input-elements-built-with-react/70848568
+        // https://stackoverflow.com/questions/23892547/what-is-the-best-way-to-trigger-change-or-input-event-in-react-js
+        return getElement(step.settings, (input) => {
+            return enterText(input, step.settings.text);
+        });
     },
     removeElement: ({ step }) => {
-        const { selector, selectorType } = step.settings;
-        const element = selectorType === SelectorTypes.XPath
-            ? getElementByXpath(selector)
-            : document.querySelector(selector);
-        console.log(element);
-        element?.remove();
-        return { success: true };
+        return getElement(step.settings, (el) => {
+            el.remove();
+            return true;
+        });
     },
     getTabInfo: async ({ step, tabId, updateStorage }) => {
         const tab = await chrome.tabs.get(tabId);

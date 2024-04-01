@@ -49,6 +49,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             dataType,
         } = msg;
 
+        // TODO: retry on failure
         let data, elements;
         if (selectorType === SelectorTypes.CSS) {
             elements = multiple

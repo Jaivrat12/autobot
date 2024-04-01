@@ -32,6 +32,9 @@ const stepTemplates = {
             selector: '',
             isRightClick: false,
             isOptional: false,      // if true and element not present, then bot will continue
+            retryCount: 5,
+            retryDelay: 1000,
+            retryInfinitely: false,
         },
         component: ClickElement,
         runMethod: stepRunMethods.clickElement,
@@ -45,6 +48,9 @@ const stepTemplates = {
             selectorType: SelectorTypes.XPath,
             selector: '',
             text: '',               // *data insertable
+            retryCount: 5,
+            retryDelay: 1000,
+            retryInfinitely: false,
         },
         component: EnterText,
         runMethod: stepRunMethods.enterText,
@@ -57,6 +63,9 @@ const stepTemplates = {
         settings: {
             selectorType: SelectorTypes.XPath,
             selector: '',
+            retryCount: 5,
+            retryDelay: 1000,
+            retryInfinitely: false,
         },
         component: RemoveElement,
         runMethod: stepRunMethods.removeElement,

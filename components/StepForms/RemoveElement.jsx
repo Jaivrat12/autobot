@@ -1,7 +1,10 @@
 import {
     Button,
+    Divider,
     Flex,
+    NumberInput,
     Select,
+    Switch,
     TextInput,
 } from '@mantine/core';
 import { focusCurrentWindow, getActiveTab } from '~utils/helper';
@@ -9,20 +12,27 @@ import { ContentUIs, MsgReasons, SelectorTypes } from '~enums';
 
 const RemoveElement = ({ step, setStep }) => {
 
-    const { selector, selectorType } = step.settings;
+    const {
+        selector,
+        selectorType,
+        retryCount,
+        retryDelay,
+        retryInfinitely,
+    } = step.settings;
 
-    const updateSettings = (name, value) => {
+    const updateSettings = (key, value) => {
         const updatedStep = { ...step };
-        if (name === 'selectorType' && updatedStep.settings.selectorType !== value) {
+        if (key === 'selectorType' && updatedStep.settings.selectorType !== value) {
             updatedStep.settings.selector = '';
         }
-        updatedStep.settings[name] = value;
+        updatedStep.settings[key] = value;
         setStep(updatedStep);
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
-        updateSettings(name, value);
+        const { name, value, checked, type } = e.target;
+        const val = type === 'checkbox' ? checked : value;
+        updateSettings(name, val);
     };
 
     const startElementSelectorMode = async () => {
@@ -69,12 +79,45 @@ const RemoveElement = ({ step, setStep }) => {
             </Flex>
 
             <Button
-                mb="xl"
                 variant="light"
                 onClick={startElementSelectorMode}
             >
                 Select Element
             </Button>
+
+            <Divider my="lg" />
+
+            <Switch
+                label="Retry Infinitely"
+                name="retryInfinitely"
+                checked={retryInfinitely}
+                onChange={handleChange}
+                mb="sm"
+            />
+
+            <Flex gap="sm" mb="md">
+                <NumberInput
+                    label="Retry Count"
+                    description="Number of retry attempts if failed to find the element"
+                    value={retryCount}
+                    onChange={(value) => updateSettings('retryCount', value)}
+                    min={0}
+                    allowDecimal={false}
+                    w="100%"
+                    disabled={retryInfinitely}
+                />
+
+                <NumberInput
+                    label="Retry Delay (in milliseconds)"
+                    description="Delay between each retry attempt (should be >100)"
+                    value={retryDelay}
+                    onChange={(value) => updateSettings('retryDelay', value)}
+                    suffix=" ms"
+                    min={100}
+                    allowDecimal={false}
+                    w="100%"
+                />
+            </Flex>
         </>
     );
 }
