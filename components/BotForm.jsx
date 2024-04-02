@@ -27,6 +27,7 @@ import {
     IconPlayerPlayFilled,
     IconPlus,
     IconSettings,
+    IconTrash,
     IconX,
 } from '@tabler/icons-react';
 import ResultData from './Common/ResultData';
@@ -74,12 +75,10 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
     const [botSettings, setBotSettings] = useState({});
     const [stepInsertIndex, setStepInsertIndex] = useState(-1);
     const [isListeningToKeys, setIsListeningToKeys] = useState(false);
+    const [tempShortcutKey, setTempShortcutKey] = useState('');
 
     const listenToKeys = (e) => {
-        setBotSettings((settings) => ({
-            ...settings,
-            shortcutKey: getKeysCombo(e, true),
-        }));
+        setTempShortcutKey(getKeysCombo(e, true));
     };
 
     const removeEventListener = () => {
@@ -143,6 +142,14 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
         setBot(newBot);
     };
 
+    const copyStep = (i) => {
+        const newBot = { ...bot };
+        const step = JSON.parse(JSON.stringify(newBot.steps[i]));
+        step.uid = uuidv4();
+        newBot.steps.splice(i + 1, 0, step);
+        setBot(newBot);
+    };
+
     const deleteStep = (i) => {
         const newBot = { ...bot };
         newBot.steps.splice(i, 1);
@@ -157,6 +164,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
             const settings = {
                 openInNewWindow: false,
                 shortcutKey: '',
+                runOnPageLoad: false,
                 runOnStartUrlList: [],
                 runOnStartUrlMatchHostNameOnly: false,
                 focusBotWindowAfterExec: false,
@@ -303,8 +311,10 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
             }
             // console.log('end step:', currStep, res);
 
-            if (res.success && currStep < bot.steps.length - 1) {
-
+            if (
+                (res.success || step.settings.skipIfFailed) &&
+                currStep < bot.steps.length - 1
+            ) {
                 setRunState((state) => ({
                     ...state,
                     isRunning: true,
@@ -334,11 +344,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
 
         <Container
             p="lg"
-            style={{
-                margin: '1rem auto',
-                // width: '30rem',
-                // minHeight: '36rem',
-            }}
+            style={{ margin: '1rem auto' }}
         >
             <Flex
                 justify="space-between"
@@ -427,6 +433,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
                         setStepInsertIndex(i);
                         openDrawer();
                     }}
+                    copyStep={() => copyStep(i)}
                     deleteStep={() => deleteStep(i)}
                 />
             ))}
@@ -448,8 +455,9 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
             <Modal
                 title="Bot Settings"
                 opened={settingsModalOpened}
-                onClose={discardCloseSettingsModal}
+                // onClose={discardCloseSettingsModal}
                 centered
+                withCloseButton={false}
             >
                 <Switch
                     label="Open in new window"
@@ -492,40 +500,118 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
                     <ActionIcon
                         variant="subtle"
                         size="xs"
-                        onClick={() => setIsListeningToKeys(val => !val)}
+                        onClick={() => {
+                            setIsListeningToKeys(true);
+                            setTempShortcutKey('');
+                        }}
+                        disabled={isListeningToKeys}
                     >
                         <IconEdit />
+                    </ActionIcon>
+
+                    <ActionIcon
+                        variant="subtle"
+                        color="red"
+                        size="xs"
+                        onClick={() => {
+                            setBotSettings((settings) => ({
+                                ...settings,
+                                shortcutKey: '',
+                            }));
+                        }}
+                        disabled={isListeningToKeys || !botSettings.shortcutKey}
+                    >
+                        <IconTrash />
                     </ActionIcon>
                 </Flex>
 
                 <ShortcutKey
-                    shortcutKey={botSettings.shortcutKey}
-                    showNone
+                    shortcutKey={isListeningToKeys
+                        ? tempShortcutKey
+                        : botSettings.shortcutKey
+                    }
+                    showNone={!isListeningToKeys}
                 />
 
-                <Textarea
-                    label="Run on page load"
-                    description="List all URLs where this bot will be run when the page is loaded"
-                    placeholder="Enter each URL on separate line"
-                    name="runOnStartUrlList"
-                    value={botSettings.runOnStartUrlList.join('\n')}
-                    onChange={handleSettingsChange}
-                    autosize
-                    minRows={3}
-                    maxRows={4}
-                    styles={{
-                        label: { marginBottom: '0.25rem' }
-                    }}
+                {isListeningToKeys && (
+                    <>
+                        <Text mt="xs" fz="sm" fs="italic">
+                            Enter shortcut key(s)
+                        </Text>
+
+                        <Flex gap="xs" mt="sm">
+                            <Button
+                                variant="light"
+                                color="green"
+                                size="compact-xs"
+                                onClick={() => {
+                                    setBotSettings((settings) => ({
+                                        ...settings,
+                                        shortcutKey: tempShortcutKey,
+                                    }));
+                                    setIsListeningToKeys(false);
+                                }}
+                                disabled={!tempShortcutKey}
+                            >
+                                Confirm
+                            </Button>
+                            <Button
+                                variant="light"
+                                color="yellow"
+                                size="compact-xs"
+                                onClick={() => setIsListeningToKeys(false)}
+                            >
+                                Cancel
+                            </Button>
+                        </Flex>
+                    </>
+                )}
+
+                <Flex
+                    justify="space-between"
+                    align="center"
                     mt="lg"
-                />
+                    mb="xs"
+                >
+                    <Text fw="bold">
+                        Run on page load
+                    </Text>
 
-                <Switch
-                    label="Match Host Name Only"
-                    name="runOnStartUrlMatchHostNameOnly"
-                    checked={botSettings.runOnStartUrlMatchHostNameOnly}
-                    onChange={handleSettingsChange}
-                    mt="sm"
-                />
+                    <Switch
+                        name="runOnPageLoad"
+                        checked={botSettings.runOnPageLoad}
+                        onChange={handleSettingsChange}
+                    />
+                </Flex>
+
+                {botSettings.runOnPageLoad && (
+                    <>
+                        <Textarea
+                            description={
+                                <>
+                                    List all URLs where this bot will be run when the page is loaded.
+                                    <br />
+                                    (Enter each URL on separate line)
+                                </>
+                            }
+                            placeholder="Enter each URL on separate line"
+                            name="runOnStartUrlList"
+                            value={botSettings.runOnStartUrlList.join('\n')}
+                            onChange={handleSettingsChange}
+                            autosize
+                            minRows={3}
+                            maxRows={4}
+                        />
+
+                        <Switch
+                            label="Match Host Name Only"
+                            name="runOnStartUrlMatchHostNameOnly"
+                            checked={botSettings.runOnStartUrlMatchHostNameOnly}
+                            onChange={handleSettingsChange}
+                            mt="sm"
+                        />
+                    </>
+                )}
 
                 <Flex justify="end" gap="xs" mt="lg">
                     <Button
@@ -536,6 +622,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
                         leftSection={
                             <IconCheck size="16" />
                         }
+                        disabled={isListeningToKeys}
                     >
                         Save
                     </Button>
@@ -548,6 +635,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
                         leftSection={
                             <IconX size="16" />
                         }
+                        disabled={isListeningToKeys}
                     >
                         Cancel
                     </Button>

@@ -18,6 +18,7 @@ const EnterText = ({ step, setStep }) => {
         retryCount,
         retryDelay,
         retryInfinitely,
+        skipIfFailed,
     } = step.settings;
 
     const updateSettings = (key, value) => {
@@ -130,6 +131,14 @@ const EnterText = ({ step, setStep }) => {
                     w="100%"
                 />
             </Flex>
+
+            <Switch
+                label="Skip if failed"
+                name="skipIfFailed"
+                checked={skipIfFailed}
+                onChange={handleChange}
+                mb="sm"
+            />
         </>
     );
 }

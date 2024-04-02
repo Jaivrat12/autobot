@@ -10,6 +10,7 @@ import {
 import {
     IconChevronDown,
     IconChevronUp,
+    IconCopy,
 } from '@tabler/icons-react';
 import {
     IconPlus,
@@ -17,12 +18,12 @@ import {
 } from '@tabler/icons-react';
 import stepTemplates from '~utils/stepTemplates';
 
-const StepForm = ({ index, step, addStep, deleteStep, ...props }) => {
+const StepForm = ({ index, step, addStep, copyStep, deleteStep, ...props }) => {
 
     const [isCollapsed, setIsCollapsed] = useState(true);
 
     const { hovered: stepHovered, ref: stepRef } = useHover();
-    const StepForm = stepTemplates[step.id].component;
+    const Form = stepTemplates[step.id].component;
 
     return (
 
@@ -87,6 +88,18 @@ const StepForm = ({ index, step, addStep, deleteStep, ...props }) => {
 
                         <ActionIcon
                             variant="subtle"
+                            color="blue"
+                            size="sm"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                copyStep();
+                            }}
+                        >
+                            <IconCopy />
+                        </ActionIcon>
+
+                        <ActionIcon
+                            variant="subtle"
                             color="red"
                             size="sm"
                             onClick={(e) => {
@@ -101,10 +114,10 @@ const StepForm = ({ index, step, addStep, deleteStep, ...props }) => {
 
                 {!isCollapsed && (
 
-                    <StepForm
+                    <Form
                         index={index}
                         step={step}
-                        { ...props }
+                        {...props}
                     />
                 )}
             </Card>
