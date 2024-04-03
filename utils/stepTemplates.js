@@ -1,11 +1,11 @@
-import GoToPage from '../Components/StepForms/GoToPage';
-import ClickElement from '../Components/StepForms/ClickElement';
-import EnterText from '../Components/StepForms/EnterText';
-import RemoveElement from '~Components/StepForms/RemoveElement';
-import GetTabInfo from '~Components/StepForms/GetTabInfo';
-import ExtractData from '~Components/StepForms/ExtractData';
-import Wait from '../Components/StepForms/Wait';
-import WaitForConfirmation from '../Components/StepForms/WaitForConfirmation';
+import GoToPage from '../components/StepForms/GoToPage';
+import ClickElement from '../components/StepForms/ClickElement';
+import EnterText from '../components/StepForms/EnterText';
+import RemoveElement from '~components/StepForms/RemoveElement';
+import GetTabInfo from '~components/StepForms/GetTabInfo';
+import ExtractData from '~components/StepForms/ExtractData';
+import Wait from '../components/StepForms/Wait';
+import WaitForConfirmation from '../components/StepForms/WaitForConfirmation';
 import { SelectorDataTypes, SelectorTypes } from '~enums';
 import stepRunMethods from './stepRunMethods';
 

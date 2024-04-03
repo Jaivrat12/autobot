@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client';
-import ContentUI from '../Components/ContentUI';
+import ContentUI from '../components/ContentUI';
 
 import type { FC } from 'react';
 import type {

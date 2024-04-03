@@ -6,8 +6,8 @@ import {
 	useNavigate,
 } from 'react-router-dom';
 import { ThemeProvider } from '../theme';
-import Home from '../Components/Home';
-import BotForm from '../Components/BotForm';
+import Home from '../components/Home';
+import BotForm from '../components/BotForm';
 
 const CustomRouter = ({ comp }) => {
 

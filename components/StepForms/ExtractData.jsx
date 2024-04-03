@@ -11,8 +11,8 @@ import {
     TextInput,
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
-import DisplayData from '~Components/Common/DisplayData';
-import SelectStorage from '~Components/Common/SelectStorage';
+import DisplayData from '~components/Common/DisplayData';
+import SelectStorage from '~components/Common/SelectStorage';
 import { ContentUIs, MsgReasons, SelectorDataTypes, SelectorTypes } from '~enums';
 import { extractData, focusCurrentWindow, getActiveTab } from '~utils/helper';
 

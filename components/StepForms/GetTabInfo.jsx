@@ -1,5 +1,5 @@
 import { Flex, Select } from '@mantine/core';
-import SelectStorage from '~Components/Common/SelectStorage';
+import SelectStorage from '~components/Common/SelectStorage';
 import { SelectorDataTypes } from '~enums';
 
 const GetTabInfo = ({ bot, setBot, step, setStep }) => {
