@@ -34,7 +34,7 @@ import ResultData from './Common/ResultData';
 import ShortcutKey from './Common/ShortcutKey';
 import StepForm from './Common/StepForm';
 import { MsgReasons } from '~enums';
-import { focusCurrentWindow, getActiveTab, getKeysCombo, wait } from '~utils/helper';
+import { focusCurrentWindow, getActiveTab, getKeysCombo } from '~utils/helper';
 import stepTemplates from '~utils/stepTemplates';
 
 const getStepTemplate = (stepId) => {

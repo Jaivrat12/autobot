@@ -37,6 +37,7 @@ const Home = ({ setIsRunningBot }) => {
     const goToBotForm = async (botId, runBot = false) => {
 
         const { success, route } = await openBotWindow(botId, runBot);
+        // if not success then it means that window is already opened
         if (!success) {
             navigation(route);
             setIsRunningBot(runBot);

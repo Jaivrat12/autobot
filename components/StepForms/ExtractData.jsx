@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { useDisclosure, useLocalStorage } from '@mantine/hooks';
+import { useState } from 'react';
+import { useDisclosure } from '@mantine/hooks';
 import {
     ActionIcon,
     Button,
@@ -13,7 +13,7 @@ import {
 import { IconTrash } from '@tabler/icons-react';
 import DisplayData from '~components/Common/DisplayData';
 import SelectStorage from '~components/Common/SelectStorage';
-import { ContentUIs, MsgReasons, SelectorDataTypes, SelectorTypes } from '~enums';
+import { ContentUIs, MsgReasons, SelectorDataTypes } from '~enums';
 import { extractData, focusCurrentWindow, getActiveTab } from '~utils/helper';
 
 const getDataInit = (storageType) => ({

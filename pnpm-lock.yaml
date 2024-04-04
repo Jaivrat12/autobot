@@ -9,10 +9,10 @@ dependencies:
     specifier: 11.11.1
     version: 11.11.1(@types/react@18.2.48)(react@18.2.0)
   '@mantine/core':
-    specifier: ^7.2.2
+    specifier: ^7.7.1
     version: 7.7.1(@mantine/hooks@7.7.1)(@types/react@18.2.48)(react-dom@18.2.0)(react@18.2.0)
   '@mantine/hooks':
-    specifier: ^7.2.2
+    specifier: ^7.7.1
     version: 7.7.1(react@18.2.0)
   '@tabler/icons-react':
     specifier: ^2.39.0
@@ -58,6 +58,9 @@ devDependencies:
   '@types/react-dom':
     specifier: 18.2.18
     version: 18.2.18
+  '@types/uuid':
+    specifier: ^9.0.8
+    version: 9.0.8
   eslint:
     specifier: ^8.55.0
     version: 8.57.0
@@ -2952,6 +2955,10 @@ packages:
 
   /@types/scheduler@0.23.0:
     resolution: {integrity: sha512-YIoDCTH3Af6XM5VuwGG/QL/CJqga1Zm3NkU3HZ4ZHK2fRMPYP1VczsTUqtsf43PH/iJNVlPHAo2oWX7BSdB2Hw==}
+
+  /@types/uuid@9.0.8:
+    resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
+    dev: true
 
   /@ungap/structured-clone@1.2.0:
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
