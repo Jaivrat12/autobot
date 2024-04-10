@@ -34,7 +34,7 @@ export type Bot = {
     id: number;
     name: string;
     settings: BotSettings;
-    steps: object;
+    steps: any[];
     storages: {
         variables: Variable[];
         arrays: Array[];

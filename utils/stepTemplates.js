@@ -4,6 +4,7 @@ import EnterText from '../components/StepForms/EnterText';
 import RemoveElement from '~components/StepForms/RemoveElement';
 import GetTabInfo from '~components/StepForms/GetTabInfo';
 import ExtractData from '~components/StepForms/ExtractData';
+import DataOps from '~components/StepForms/DataOps';
 import Wait from '../components/StepForms/Wait';
 import WaitForConfirmation from '../components/StepForms/WaitForConfirmation';
 import { SelectorDataTypes, SelectorTypes } from '~enums';
@@ -16,7 +17,9 @@ const stepTemplates = {
         description: 'Instruct the bot to go to a new page',
         context: 'popup',
         settings: {
-            pageURL: '',            // *data insertable
+            dataSourceType: 'manual',
+            storageId: '',
+            pageURL: '',
             openInNewTab: false,
         },
         component: GoToPage,
@@ -97,6 +100,24 @@ const stepTemplates = {
         },
         component: ExtractData,
         runMethod: stepRunMethods.extractData,
+    },
+    dataOps: {
+        id: 'dataOps',
+        title: 'Perform Operations on Data',
+        description: 'Perform operations on stored data (modify it) and save it to storage for further use',
+        context: 'popup',
+        settings: {
+            inputStorageId: '',
+            storageType: 'variable',
+            storageId: '',
+            operator: {
+                type: 'replace',
+                pattern: '',
+                replacement: '',
+            },
+        },
+        component: DataOps,
+        runMethod: stepRunMethods.dataOps,
     },
     wait: {
         id: 'wait',

@@ -76,7 +76,7 @@ const ResultData = ({ storages }) => {
             <Flex align="end" gap="sm" mb="lg">
                 <Select
                     label="Select Data Storage"
-                    value={storageId}
+                    value={String(storageId)}
                     onChange={setStorageId}
                     data={Object.values(storages).map((storage) => ({
                         value: storage.id.toString(),

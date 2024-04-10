@@ -33,7 +33,7 @@ import {
 import ResultData from './Common/ResultData';
 import ShortcutKey from './Common/ShortcutKey';
 import StepForm from './Common/StepForm';
-import { MsgReasons } from '~enums';
+import { MsgReasons, SelectorDataTypes } from '~enums';
 import { focusCurrentWindow, getActiveTab, getKeysCombo } from '~utils/helper';
 import stepTemplates from '~utils/stepTemplates';
 
@@ -239,7 +239,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
 
     useEffect(() => {
 
-        // console.log('useEffect:', runState.tab?.status, runState.isRunning);
+        // console.log('useEffect:', runState.isRunning, runState.currStep, runState.tab?.status);
         const { isRunning, tab, currStep } = runState;
         if (!isRunning || tab?.status !== 'complete') {
             return;
@@ -247,10 +247,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
 
         (async () => {
 
-            setRunState((state) => ({
-                ...state,
-                isRunning: false,
-            }));
+            // console.log('start step:', currStep);
 
             const updateCurrentTab = (newTab) => {
                 setRunState((runState) => ({ ...runState, tab: newTab }));
@@ -272,7 +269,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
                         id: storage.id,
                         name: storage.name,
                         type: storage.type,
-                        metadata: step.settings.data,
+                        metadata: step.settings.data ?? { type: SelectorDataTypes.Text },
                         data,
                     };
                 } else {
@@ -280,7 +277,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
                         id: storage.id,
                         name: storage.name,
                         type: storage.type,
-                        metadata: step.settings.data,
+                        metadata: step.settings.data ?? { type: SelectorDataTypes.Text },
                         data: [],
                     };
                     storages[storageId].data.push(...data);
@@ -294,12 +291,12 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
 
             const step = bot.steps[currStep];
             let res;
-            // console.log('start step:', currStep);
             if (step.context === 'popup') {
                 const { runMethod } = stepTemplates[step.id];
                 res = await runMethod({
                     step,
                     tabId: tab.id,
+                    storages: runState.storages,
                     updateCurrentTab,
                     updateStorage,
                 });
@@ -315,12 +312,16 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
                 (res.success || step.settings.skipIfFailed) &&
                 currStep < bot.steps.length - 1
             ) {
+                // console.log('success! go to next step:', currStep + 1);
                 setRunState((state) => ({
                     ...state,
-                    isRunning: true,
                     currStep: state.currStep + 1,
                 }));
             } else {
+                setRunState((state) => ({
+                    ...state,
+                    isRunning: false,
+                }));
                 if (bot.settings.focusBotWindowAfterExec) {
                     focusCurrentWindow();
                 }
@@ -329,7 +330,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
 
             // console.log(runState.storages);
         })();
-    }, [runState.tab?.status, runState.isRunning]);
+    }, [runState.tab?.status, runState.currStep]);
 
     useEffect(() => {
         if (bot && isRunningBot) {

@@ -25,10 +25,21 @@ const getElement = async ({
 };
 
 const stepRunMethods = {
-    goToPage: async ({ step, tabId, updateCurrentTab }) => {
+    goToPage: async ({ step, tabId, storages, updateCurrentTab }) => {
 
-        const tabProps = { url: step.settings.pageURL };
-        const tab = step.settings.openInNewTab
+        const {
+            dataSourceType,
+            storageId,
+            pageURL,
+            openInNewTab,
+        } = step.settings;
+
+        const url = dataSourceType === 'storage'
+            ? storages[storageId].data[0]
+            : pageURL;
+        const tabProps = { url };
+
+        const tab = openInNewTab
             ? await chrome.tabs.create(tabProps)
             : await chrome.tabs.update(tabId, tabProps);
         updateCurrentTab(tab);
@@ -61,6 +72,13 @@ const stepRunMethods = {
     extractData: async ({ step, tabId, updateStorage }) => {
         const data = await extractData(step, tabId);
         updateStorage(step, data);
+        return { success: true };
+    },
+    dataOps: async ({ step, storages, updateStorage }) => {
+        const { inputStorageId, operator } = step.settings;
+        const data = storages[inputStorageId].data[0];
+        const updatedData = data.replace(operator.pattern, operator.replacement);
+        updateStorage(step, [updatedData]);
         return { success: true };
     },
     wait: async ({ step }) => {
