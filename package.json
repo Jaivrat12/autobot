@@ -15,6 +15,7 @@
     "@mantine/core": "^7.7.1",
     "@mantine/hooks": "^7.7.1",
     "@tabler/icons-react": "^2.39.0",
+    "@uidotdev/usehooks": "^2.4.1",
     "css-selector-generator": "^3.6.6",
     "get-xpath": "^3.1.0",
     "plasmo": "0.85.2",

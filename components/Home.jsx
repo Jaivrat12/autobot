@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useLocalStorage } from '@mantine/hooks';
+import { useLocalStorage } from '@uidotdev/usehooks';
 import {
     ActionIcon,
     Button,
@@ -22,10 +22,7 @@ const Home = ({ setIsRunningBot }) => {
 
     const navigation = useNavigate();
 
-    const [bots, setBots] = useLocalStorage({
-        key: 'bots',
-        defaultValue: {},
-    });
+    const [bots, setBots] = useLocalStorage('bots', {});
 
     const deleteBot = (bot) => {
         const updatedBots = { ...bots };

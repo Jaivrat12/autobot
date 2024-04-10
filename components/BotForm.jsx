@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-    useDisclosure,
-    useLocalStorage,
-} from '@mantine/hooks';
+import { useLocalStorage } from '@uidotdev/usehooks';
+import { useDisclosure } from '@mantine/hooks';
 import {
     ActionIcon,
     Button,
@@ -66,10 +64,7 @@ const BotForm = ({ isRunningBot, setIsRunningBot }) => {
         close: closeDrawer,
     }] = useDisclosure(false);
 
-    const [bots, setBots] = useLocalStorage({
-        key: 'bots',
-        defaultValue: {},
-    });
+    const [bots, setBots] = useLocalStorage('bots', {});
 
     const [bot, setBot] = useState(null);
     const [botSettings, setBotSettings] = useState({});
