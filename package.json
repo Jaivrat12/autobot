@@ -43,7 +43,6 @@
       "https://*/*"
     ],
     "permissions": [
-      "scripting",
       "storage",
       "tabs",
       "unlimitedStorage"
